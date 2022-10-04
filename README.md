@@ -1,0 +1,10 @@
+# NCU Data Structure Fall 2022
+
+This is NCU Data Structure in Fall 2022 taught by 洪炯宗教授.
+
+## Homework
+
+| HW#   | Problems                                                              | Code                                                      | Status |
+| ----- | --------------------------------------------------------------------- | --------------------------------------------------------- | ------ |
+| hw1_1 | [Use postfix to calculate value](http://140.115.51.40:81/problem/001) | [c](./HW/HW-1/1_1-hw1_1-use_postfix_to_calculate_value.c) | AC     |
+| hw1_2 |                                                                       |                                                           |        |
