@@ -65,8 +65,8 @@ dkms.conf
 *.vsix
 
 # My test file
-*/test.c
-*/test.exe
+test.c
+test.exe
 
 # General
 .DS_Store
@@ -94,7 +94,3 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
-
-*
-!/**/
-!*.*
