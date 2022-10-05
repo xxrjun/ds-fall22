@@ -21,12 +21,12 @@ float stack[MAX_STACK_SIZE];
 int top = -1;
 
 /* Declaration of methods*/
-void push(float item);
-float pop();
-int isEmpty(); // return 1 if the stack is empty, otherwise return 0
-int isFull();  // return 1 if the stack is full, otherwise return 0
-float evaluate_postfix(char postfix[]);
-int is_invalid_input(char c); // return 1 if the input is invalid, otherwise return 0
+void push(float item);                  // push item into stack
+float pop();                            // pop item from stack
+int isEmpty();                          // return 1 if the stack is empty, otherwise return 0
+int isFull();                           // return 1 if the stack is full, otherwise return 0
+float evaluate_postfix(char postfix[]); // evaluate input in postfix expression
+int is_invalid_input(char c);           // return 1 if the input is invalid, otherwise return 0
 
 int main()
 {
@@ -43,7 +43,7 @@ int main()
         cur = getchar();
         input_postfix[i++] = cur;
 
-        if (cur == '\n')
+        if (cur == '\n' || is_invalid_input(cur) == 1)
         {
             break;
         }
@@ -61,7 +61,6 @@ void push(float item)
     // Check whether the stack overflow.
     if (isFull() == 1)
     {
-        // printf("The stack overflow!");
         return;
     }
 
@@ -78,6 +77,7 @@ float pop()
         return '$';
     }
 
+    // Get the deleted item to return
     float deleted_item = stack[top--];
 
     return deleted_item;
@@ -107,40 +107,46 @@ float evaluate_postfix(char postfix[])
 {
     int i;
     char c;
-    float sum, val1, val2;
+    float total, val1, val2;
 
+    // Iterate over the input array
     for (i = 0; postfix[i] != '\n' && i < MAX_POSTFIX_SIZE; i++)
     {
         c = postfix[i];
 
         if (isdigit(c))
         {
+            // If c is digit, just push it onto the stack
+            // Using c - '0' to get the digit value rather than ASCII code.
             push(c - '0');
         }
         else
         {
+            /* If c is operation, pop out top 2 digits from stack.
+                Then, do the operation and get result then push it onto the stack. */
+
             float val1 = pop();
             float val2 = pop();
 
             switch (c)
             {
             case '+':
-                sum = val2 + val1;
+                total = val2 + val1;
                 break;
             case '-':
-                sum = val2 - val1;
+                total = val2 - val1;
                 break;
             case '*':
-                sum = val2 * val1;
+                total = val2 * val1;
                 break;
             case '/':
-                sum = val2 / val1;
+                total = val2 / val1;
                 break;
             default:
                 break;
             }
 
-            push(sum);
+            push(total);
         }
     }
 
@@ -149,7 +155,8 @@ float evaluate_postfix(char postfix[])
 
 int is_invalid_input(char c)
 {
-    if (!isdigit(c) || c || '+' && c || '-' || c != '*' || c != '/')
+    // Only digits, '+', '-', '*' and '/' is valid.
+    if (!isdigit(c) && c != '+' && c != '-' && c != '*' && c != '/')
     {
         return 1;
     }
