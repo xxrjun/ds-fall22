@@ -21,14 +21,16 @@ float stack[MAX_STACK_SIZE];
 int top = -1;
 
 /* Declaration of methods*/
-void push(char item);                                                            // push item into stack
-char pop();                                                                      // pop item from stack
-int isEmpty();                                                                   // return 1 if the stack is empty, otherwise return 0
-int isFull();                                                                    // return 1 if the stack is full, otherwise return 0
-int get_priority(char c);                                                        // return the priority of character
-int is_invalid_input(char c);                                                    // return 1 if the input is invalid, otherwise return 0
-void infix_to_prefix(char input_infix[MAX_ARR_SIZE], char prefix[MAX_ARR_SIZE]); // turn infix to prefix expression
-void reverse(char str[MAX_ARR_SIZE], int len);                                   // reverse
+void push(char item);         // push item into stack
+char pop();                   // pop item from stack
+char peek();                  // peek top item from stack
+int isEmpty();                // return 1 if the stack is empty, otherwise return 0
+int isFull();                 // return 1 if the stack is full, otherwise return 0
+int get_precedence(char c);   // return the priority of character
+int is_invalid_input(char c); // return 1 if the input is invalid, otherwise return 0
+void infix_to_prefix(char input_infix[MAX_ARR_SIZE],
+                     char prefix[MAX_ARR_SIZE], int len); // turn infix to prefix expression
+void reverse(char str[MAX_ARR_SIZE], int len);            // reverse
 
 int main()
 {
@@ -36,7 +38,6 @@ int main()
     char input_infix[MAX_ARR_SIZE], prefix[MAX_ARR_SIZE];
     int i = 0, len = 0;
     char cur;
-    float result;
 
     /* Get input in infix expression */
     while (i < MAX_ARR_SIZE)
@@ -52,14 +53,67 @@ int main()
         }
     }
 
-    len = i;
-    // reverse(prefix, len);
-
     /* Turn infix to prefix and output it */
-    // infix_to_prefix(input_infix, prefix);
-    printf("%c\n", input_infix[2]);
+    len = i - 1;
+    infix_to_prefix(input_infix, prefix, len);
 
-    return 0;
+    for (i = 0; i < len; i++)
+    {
+        printf("%c", prefix[i]);
+    }
+    printf("\n");
+}
+
+void infix_to_prefix(char input_infix[MAX_ARR_SIZE], char prefix[MAX_ARR_SIZE], int len)
+{
+    /* Reverse input_infix to make infix_to_prefix to be easier. */
+    reverse(input_infix, len);
+
+    int i;
+
+    int prefix_ptr = 0;
+    char c; // current scanned character
+
+    /* Iterating */
+    for (i = 0; i < len; i++)
+    {
+        c = input_infix[i];
+        if (isdigit(c))
+        {
+            /* Add it to output if the scanned character is an operand.*/
+            prefix[prefix_ptr++] = c;
+        }
+        else
+        {
+
+            if (get_precedence(c) >= get_precedence(peek()))
+            {
+                /* If the scanned operator has greater or equal precedence to the top one of stack,
+                    push the scanned operator onto the stack. */
+                push(c);
+            }
+            else
+            {
+                /* Pop out all operators to output which has greater precedence than scanned one. */
+                while (isEmpty() != 1 && get_precedence(c) < get_precedence(peek()))
+                {
+                    prefix[prefix_ptr++] = pop();
+                }
+
+                /* Push the scanned operator onto stack after popping. */
+                push(c);
+            }
+        }
+    }
+
+    /* Pop out all operators in stack to output*/
+    while (isEmpty() != 1)
+    {
+        prefix[prefix_ptr++] = pop();
+    }
+
+    /* Reverse result to be correct prefix we want. */
+    reverse(prefix, len);
 }
 
 void reverse(char str[MAX_ARR_SIZE], int len)
@@ -73,7 +127,8 @@ void reverse(char str[MAX_ARR_SIZE], int len)
         str[len - i - 1] = temp;
     }
 }
-int get_priority(char c)
+
+int get_precedence(char c)
 {
     switch (c)
     {
@@ -98,6 +153,11 @@ void push(char item)
 
     // push item into stack
     stack[++top] = item;
+}
+
+char peek()
+{
+    return stack[top];
 }
 
 char pop()
