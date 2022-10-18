@@ -1,6 +1,6 @@
 /**
  * @file 1_1-hw1_1-use_postfix_to_calculate_value.c
- * @author 109403019 鄒翔宇
+ * @author NCU MIS 109403019 鄒翔宇
  * @brief hw1_1 use_postfix_to_calculate_value
  * @date 2022-10-04
  *
