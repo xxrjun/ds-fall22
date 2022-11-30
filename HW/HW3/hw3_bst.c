@@ -34,34 +34,36 @@ int main()
     int n = 0;
     scanf("%d", &n);
 
-    // exit if n is -1
-    if (n == -1)
+    while (n != -1)
     {
-        return 0;
-    }
-
-    int input = 0;
-    scanf("%d", &input);
-
-    Node *head = newNode(input);
-
-    for (int i = 0; i < n - 1; i++)
-    {
+        int input = 0;
         scanf("%d", &input);
-        head = insert(head, input);
+
+        // Create a new binary search tree
+        Node *head = newNode(input);
+
+        for (int i = 0; i < n - 1; i++)
+        {
+            scanf("%d", &input);
+            head = insert(head, input);
+        }
+
+        printf("Preorder: ");
+        preorder(head);
+        printf("\n");
+
+        printf("Inorder: ");
+        inorder(head);
+        printf("\n");
+
+        printf("Postorder: ");
+        postorder(head);
+        printf("\n");
+
+        scanf("%d", &n);
     }
 
-    printf("Preorder: ");
-    preorder(head);
-    printf("\n");
-
-    printf("Inorder: ");
-    inorder(head);
-    printf("\n");
-
-    printf("Postorder: ");
-    postorder(head);
-    printf("\n");
+    return 0;
 }
 
 /**
@@ -152,6 +154,9 @@ Input:
 8
 10 5 6 13 4 9 7 1
 
+
+-1
+
 Output:
 Preorder: 10 5 4 1 6 9 7 13
 Inorder: 1 4 5 6 7 9 10 13
@@ -169,8 +174,28 @@ Output:
 
 Test3
 Input:
+8
+10 5 6 13 4 9 7 1
+9
+10 6 4 13 2 7 11 5 12
+
+
+-1
+
+Output:
+Preorder: 10 5 4 1 6 9 7 13
+Inorder: 1 4 5 6 7 9 10 13
+Postorder: 1 4 7 9 6 5 13 10
+Preorder: 10 6 4 2 5 7 13 11 12
+Inorder: 2 4 5 6 7 10 11 12 13
+Postorder: 2 5 4 7 6 12 11 13 10
+-------------------------------------------------------------
+
+Test4
+Input:
 100
 206 150 323 185 30 400 13 18 141 307 271 389 91 71 331 290 32 357 19 276 35 162 223 156 127 52 86 90 326 336 242 187 37 367 257 50 371 8 24 333 294 93 293 247 28 318 353 77 358 198 321 195 41 188 158 279 319 343 215 45 102 17 88 131 40 278 149 161 25 273 130 31 337 376 166 145 227 304 258 356 213 44 391 98 193 173 49 144 243 138 374 106 36 154 109 282 217 369 182 76
+-1
 
 Output:
 Preorder: 206 150 30 13 8 18 17 19 24 28 25 141 91 71 32 31 35 52 37 36 50 41 40 45 44 49 86 77 76 90 88 127 93 102 98 106 109 131 130 138 149 145 144 185 162 156 154 158 161 166 173 182 187 198 195 188 193 323 307 271 223 215 213 217 242 227 257 247 243 258 290 276 273 279 278 282 294 293 304 318 321 319 400 389 331 326 357 336 333 353 343 337 356 367 358 371 369 376 374 391
