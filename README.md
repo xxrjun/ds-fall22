@@ -11,3 +11,4 @@ Thanks to Professor and TAs.
 | hw1_1 | [Use postfix to calculate value](http://140.115.51.40:81/problem/001) | [C](./HW/HW1/1_1-use_postfix_to_calculate_value.c) |   AC   |
 | hw1_2 | [Infix to prefix](http://140.115.51.40:81/problem/002)                |        [C](./HW/HW1/1_2-infix_to_prefix.c)         |   AC   |
 | hw2_1 | [Reservation queuing system](http://140.115.51.40:81/problem/003)     |   [C](./HW/HW2/2_1-reservation_queuing_system.c)   |   AC   |
+|  hw3  | Binary Search Tree                                                    |              [C](./HW//HW3/hw3_bst.c)              |   AC   |
