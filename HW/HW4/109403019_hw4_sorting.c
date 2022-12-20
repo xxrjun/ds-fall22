@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <time.h>
 
-#define MAX 100
+#define MAX 100000
 
 /* Declaration of functions */
 double bubble_sort(int *arr, int n);
