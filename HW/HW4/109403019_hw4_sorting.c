@@ -137,7 +137,7 @@ void quick_sort_helper(int *arr, int left, int right)
     }
 
     /* Swap i with pivot */
-    swap(&arr[pivot], &arr[i]);
+    swap(&arr[pivot], &arr[j]);
 
     /* sort left site */
     quick_sort_helper(arr, left, i - 1);

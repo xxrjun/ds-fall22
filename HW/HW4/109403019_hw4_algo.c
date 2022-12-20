@@ -9,120 +9,182 @@
  *
  */
 
+// Using adjacency matrix to represent a graph, and using Kruskal's algorithm and Prim's algorithm to find the minimum spanning tree of the graph.
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <time.h>
 
-// kruskal's algorithm
-typedef struct edge
-{
-  int u, v, w;
-} edge;
+#define MAX 1000
 
-typedef struct graph
-{
-  int n, m;
-  edge *edges;
-} graph;
-
-typedef struct subset
-{
-  int parent, rank;
-} subset;
-
-int cmp(const void *a, const void *b)
-{
-  edge *x = (edge *)a, *y = (edge *)b;
-  return x->w - y->w;
-}
-
-int find(subset *subsets, int i)
-{
-  if (subsets[i].parent != i)
-  {
-    subsets[i].parent = find(subsets, subsets[i].parent);
-  }
-  return subsets[i].parent;
-}
-
-void Union(subset *subsets, int x, int y)
-{
-  int xroot = find(subsets, x);
-  int yroot = find(subsets, y);
-
-  if (subsets[xroot].rank < subsets[yroot].rank)
-  {
-    subsets[xroot].parent = yroot;
-  }
-  else if (subsets[xroot].rank > subsets[yroot].rank)
-  {
-    subsets[yroot].parent = xroot;
-  }
-  else
-  {
-    subsets[yroot].parent = xroot;
-    subsets[xroot].rank++;
-  }
-}
-
-void kruskal(graph *g)
-{
-  int e = 0, i = 0;
-  edge result[g->n];
-  qsort(g->edges, g->m, sizeof(g->edges[0]), cmp);
-  subset *subsets = (subset *)malloc(g->n * sizeof(subset));
-  for (int v = 0; v < g->n; v++)
-  {
-    subsets[v].parent = v;
-    subsets[v].rank = 0;
-  }
-  while (e < g->n - 1 && i < g->m)
-  {
-    edge next_edge = g->edges[i++];
-    int x = find(subsets, next_edge.u);
-    int y = find(subsets, next_edge.v);
-    if (x != y)
-    {
-      result[e++] = next_edge;
-      Union(subsets, x, y);
-    }
-  }
-  for (i = 0; i < e; i++)
-  {
-    printf("%d %d %d", result[i].u, result[i].v, result[i].w);
-  }
-}
+/* Declaration of functions */
+void kruskal(int n, int graph[MAX][MAX]);
+void prim(int n, int graph[MAX][MAX]);
+int find(int *parent, int i);
+void union_set(int *parent, int x, int y);
+int min_key(int *key, int *mst_set, int n);
+void print_mst(int *parent, int n, int graph[MAX][MAX]);
 
 int main()
 {
-  int n = 0;
-  int m = 0;
+  int n;
+  int graph[MAX][MAX];
 
-  graph *g = (graph *)malloc(sizeof(graph));
+  /* Input the number of vertices */
+  scanf("%d", &n);
 
-  while (n != -1)
+  /* Input the adjacency matrix */
+  for (int i = 0; i < n; i++)
   {
-    scanf("%d", &n);
-    if (n == -1)
+    for (int j = 0; j < n; j++)
     {
-      break;
+      scanf("%d", &graph[i][j]);
     }
-    scanf("%d", &m);
-
-    g->n = n;
-    g->m = m;
-    g->edges = (edge *)malloc(m * sizeof(edge));
-    for (int i = 0; i < m; i++)
-    {
-      scanf("%d %d %d", &g->edges[i].u, &g->edges[i].v, &g->edges[i].w);
-    }
-    kruskal(g);
   }
 
-  for (int i = 0; i < m; i++)
-  {
-    scanf("%d %d %d", &g->edges[i].u, &g->edges[i].v, &g->edges[i].w);
-  }
-  kruskal(g);
+  /* Find the minimum spanning tree of the graph */
+  kruskal(n, graph);
+  prim(n, graph);
+
   return 0;
+}
+
+// Using Kruskal's algorithm to find the minimum spanning tree of the graph.
+void kruskal(int n, int graph[MAX][MAX])
+{
+  int parent[n];
+  int edge_count = 0;
+  int min_cost = 0;
+  int min, min_i, min_j;
+
+  /* Initialize parent array */
+  for (int i = 0; i < n; i++)
+    parent[i] = i;
+
+  /* Find the minimum spanning tree of the graph */
+  while (edge_count < n - 1)
+  {
+    min = 999999;
+
+    /* Find the minimum weight edge */
+    for (int i = 0; i < n; i++)
+    {
+      for (int j = 0; j < n; j++)
+      {
+        if (graph[i][j] < min)
+        {
+          min = graph[i][j];
+          min_i = i;
+          min_j = j;
+        }
+      }
+    }
+
+    /* Check if the edge is a cycle */
+    if (find(parent, min_i) != find(parent, min_j))
+    {
+      printf("%d %d\n", min_i, min_j);
+      edge_count++;
+      min_cost += min;
+      union_set(parent, min_i, min_j);
+    }
+
+    /* Set the weight of the edge to 999999 to avoid finding the same edge again */
+    graph[min_i][min_j] = 999999;
+    graph[min_j][min_i] = 999999;
+  }
+
+  printf("%d\n", min_cost);
+}
+
+// Using Prim's algorithm to find the minimum spanning tree of the graph.
+void prim(int n, int graph[MAX][MAX])
+{
+  int parent[n];
+  int key[n];
+  int mst_set[n];
+  int min_cost = 0;
+
+  /* Initialize parent array, key array, and mst_set array */
+  for (int i = 0; i < n; i++)
+  {
+    key[i] = 999999;
+    mst_set[i] = 0;
+  }
+
+  /* Set the first vertex as the root of the tree */
+  key[0] = 0;
+  parent[0] = -1;
+
+  /* Find the minimum spanning tree of the graph */
+  for (int i = 0; i < n - 1; i++)
+  {
+    /* Find the minimum key vertex */
+    int u = min_key(key, mst_set, n);
+
+    /* Add the vertex to the mst_set */
+    mst_set[u] = 1;
+
+    /* Update the key value of the adjacent vertices of the vertex */
+    for (int v = 0; v < n; v++)
+    {
+      if (graph[u][v] && mst_set[v] == 0 && graph[u][v] < key[v])
+      {
+        parent[v] = u;
+        key[v] = graph[u][v];
+      }
+    }
+  }
+
+  /* Print the minimum spanning tree */
+  print_mst(parent, n, graph);
+}
+
+// Find the root of the set
+int find(int *parent, int i)
+{
+  if (parent[i] == -1)
+    return i;
+  return find(parent, parent[i]);
+}
+
+// Union two sets
+void union_set(int *parent, int x, int y)
+{
+  int xset = find(parent, x);
+  int yset = find(parent, y);
+  parent[xset] = yset;
+}
+
+// Find the minimum key vertex
+int min_key(int *key, int *mst_set, int n)
+{
+  int min = 999999;
+  int min_index;
+
+  for (int i = 0; i < n; i++)
+  {
+    if (mst_set[i] == 0 && key[i] < min)
+    {
+      min = key[i];
+      min_index = i;
+    }
+  }
+
+  return min_index;
+}
+
+// Print the minimum spanning tree
+void print_mst(int *parent, int n, int graph[MAX][MAX])
+{
+  int min_cost = 0;
+
+  for (int i = 1; i < n; i++)
+  {
+    printf("%d %d", parent[i], i);
+
+    /* Calculate the minimum cost */
+    min_cost += graph[i][parent[i]];
+  }
+
+  printf("%d", min_cost);
 }
